@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text style={{ color: "#000" }}>I HATE THIS CLASS</Text>
+      <Text style={styles.text}>NAON</Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -17,5 +17,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     TextColor: "#fff",
+  },
+  text: {
+    color: "black",
+    fontFamily: "Roboto",
+    fontSize: 40,
   },
 });
