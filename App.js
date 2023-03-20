@@ -21,6 +21,6 @@ const styles = StyleSheet.create({
   text: {
     color: "black",
     fontFamily: "Roboto",
-    fontSize: 40,
+    fontSize: 40 ,
   },
 });
