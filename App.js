@@ -41,7 +41,5 @@ const styles = StyleSheet.create({
     color: "black",
     fontFamily: "Sedan-Regular",
     fontSize: 40,
-    fontFamily: "Roboto",
-    fontSize: 40,
   },
 });
