@@ -1,14 +1,14 @@
 import { StatusBar } from "expo-status-bar";
-import { useCallback } from 'react';
+import { useCallback } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    'Sedan-Regular': require('./assets/fonts/Sedan-Regular.ttf'),
+    "Sedan-Regular": require("./assets/fonts/Sedan-Regular.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
