@@ -40,6 +40,6 @@ const styles = StyleSheet.create({
   text: {
     color: "black",
     fontFamily: "Sedan-Regular",
-    fontSize: 40,
+    fontSize: 45,
   },
 });
