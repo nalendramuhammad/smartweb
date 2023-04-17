@@ -14,11 +14,9 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 
 const SignInScreen = ({ navigation }) => {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   
   const handleFacebookLogin = async () => {
     try {
@@ -103,7 +101,7 @@ const SignInScreen = ({ navigation }) => {
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
-          placeholder="Password"
+          placeholder="password"
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
