@@ -6,6 +6,8 @@ import DetailScreen from "./screens/DetailScreen";
 import CustomSplashScreen from "./screens/SplashScreen";
 import SignUpScreen from "./screens/SignUpScreen";
 import SignInScreen from "./screens/SignInScreen";
+import PrivacyPolicyScreen from "./screens/PrivacyPolicyScreen";
+import TermsOfUseScreen from "./screens/TermsOfUseScreen";
 
 const Stack = createStackNavigator();
 
@@ -28,16 +30,10 @@ export default function App() {
           component={DetailScreen}
           options={{ title: "Detail" }}
         />
-        <Stack.Screen
-          name="SignUp"
-          component={SignUpScreen}
-          
-        />
-        <Stack.Screen
-          name="SignIn"
-          component={SignInScreen}
-          
-        />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="SignIn" component={SignInScreen} />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+        <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>
