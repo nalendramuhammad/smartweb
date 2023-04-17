@@ -30,10 +30,10 @@ export default function HomeScreen({ navigation }) {
       </View>
       <View style={styles.bottomContainer}>
         <TouchableOpacity onPress={() => navigation.navigate("TermsOfUse")}>
-          <Text style={styles.bottomText}>Terms of Use</Text>
+          <Text style={styles.bottomText}>terms of use</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate("PrivacyPolicy")}>
-          <Text style={styles.bottomText}>Privacy Policy</Text>
+          <Text style={styles.bottomText}>privacy policy</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -70,12 +70,12 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    marginHorizontal: 20,
     position: "absolute",
     bottom: 42,
   },
   bottomText: {
     fontSize: 12,
-    marginHorizontal: 51,
+    marginHorizontal: 20,
   },
 });
