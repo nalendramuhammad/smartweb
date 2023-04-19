@@ -31,10 +31,35 @@ export default function App() {
           component={DetailScreen}
           options={{ title: "Detail" }}
         />
-        <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
-        <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
+        <Stack.Screen
+          name="SignUp"
+          component={SignUpScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="SignIn"
+          component={SignInScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} 
+        options={{
+          title: "Privacy Policy",
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontSize: 20,
+          },
+        }}/>
+        <Stack.Screen
+          name="TermsOfUse"
+          component={TermsOfUseScreen}
+          options={{
+            title: "Terms of Use",
+            headerTitleAlign: "center",
+            headerTitleStyle: {
+              fontSize: 20,
+            },
+          }}
+        />
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>

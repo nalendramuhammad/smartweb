@@ -145,7 +145,7 @@ const SignUpScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit</Text>
+        <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
       <View style={styles.borderIconsContainer}>
         <Text style={styles.borderIconsText}>or sign up with</Text>

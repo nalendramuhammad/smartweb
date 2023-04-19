@@ -16,6 +16,11 @@ const SignInScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const handleForgotPassword = () => {
+    // Handle forgot password logic here
+  };
 
   
   const handleFacebookLogin = async () => {
@@ -85,6 +90,10 @@ const SignInScreen = ({ navigation }) => {
     // TODO: handle form submission
   };
 
+  const handleRememberMe = () => {
+    setRememberMe(!rememberMe);
+  };
+
   if (!fontsLoaded) {
     return null;
   }
@@ -117,8 +126,23 @@ const SignInScreen = ({ navigation }) => {
           />
         </TouchableOpacity>
       </View>
+      <View style={styles.rememberForgotContainer}>
+        <View style={styles.rememberMeContainer}>
+          <TouchableOpacity onPress={handleRememberMe}>
+            <FontAwesome
+              name={rememberMe ? "check-square-o" : "square-o"}
+              size={24}
+              color="#000"
+            />
+          </TouchableOpacity>
+          <Text style={styles.rememberMeText}>Remember me</Text>
+        </View>
+        <TouchableOpacity onPress={handleForgotPassword}>
+          <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit</Text>
+        <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
       <View style={styles.borderIconsContainer}>
         <Text style={styles.borderIconsText}>or sign in with</Text>
@@ -190,6 +214,24 @@ const styles = StyleSheet.create({
   passwordIcon: {
     padding: 8,
   },
+  rememberForgotContainer: {
+    width: 342,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  rememberMeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  rememberMeText: {
+    marginLeft: 8,
+    fontSize: 13,
+  },
+  forgotPasswordText: {
+    fontSize: 13,
+    color: "black",
+  },
   button: {
     width: 342,
     height: 52,
@@ -197,6 +239,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 15
   },
   buttonText: {
     color: "#fff",
