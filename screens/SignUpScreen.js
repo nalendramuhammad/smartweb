@@ -5,12 +5,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
+  KeyboardAvoidingView
 } from "react-native";
 import { useFonts } from "expo-font";
 import { FontAwesome } from "@expo/vector-icons";
-import * as Facebook from 'expo-facebook';
-import * as Google from 'expo-google-app-auth';
-import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Facebook from "expo-facebook";
+import * as Google from "expo-google-app-auth";
+import * as AppleAuthentication from "expo-apple-authentication";
+import supabase from "../supabase/supabase";
+import sha256 from "crypto-js/sha256";
 
 const SignUpScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -19,63 +22,90 @@ const SignUpScreen = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
-  const handleFacebookLogin = async () => {
+
+  const handleSubmit = async () => {
     try {
-      await Facebook.initializeAsync({
-        appId: 'YOUR_APP_ID',
-      });
-      const { type, token } = await Facebook.logInWithReadPermissionsAsync({
-        permissions: ['public_profile', 'email'],
-      });
+      // Hash the password before inserting it into the database
+      const hashedPassword = sha256(password).toString();
   
-      if (type === 'success') {
-        // You can use the token to authenticate the user on the server
-        console.log('Facebook token:', token);
-      } else if (type === 'cancel') {
-        console.log('Facebook login cancelled');
+      // Insert the user data into the Supabase "users" table
+      const { error } = await supabase
+        .from("users")
+        .insert({ name, email, password: hashedPassword })
+        .single();
+  
+      if (error) {
+        console.log("Error inserting user:", error.message);
       } else {
-        console.log('Facebook login error:', type);
+        // success message or redirect to next page
+        console.log("User inserted successfully");
       }
     } catch (error) {
-      console.log('Facebook login error:', error.message);
+      console.log("Error inserting user:", error.message);
     }
   };
   
+
+  // Function to handle login with Facebook
+  const handleFacebookLogin = async () => {
+    try {
+      await Facebook.initializeAsync({
+        appId: "YOUR_APP_ID",
+      });
+      const { type, token } = await Facebook.logInWithReadPermissionsAsync({
+        permissions: ["public_profile", "email"],
+      });
+
+      if (type === "success") {
+        // You can use the token to authenticate the user on the server
+        console.log("Facebook token:", token);
+      } else if (type === "cancel") {
+        console.log("Facebook login cancelled");
+      } else {
+        console.log("Facebook login error:", type);
+      }
+    } catch (error) {
+      console.log("Facebook login error:", error.message);
+    }
+  };
+
   // Function to handle login with Google
   const handleGoogleLogin = async () => {
     try {
       const { type, accessToken, user } = await Google.logInAsync({
-        androidClientId: 'YOUR_ANDROID_CLIENT_ID',
-        iosClientId: 'YOUR_IOS_CLIENT_ID',
-        scopes: ['profile', 'email'],
+        androidClientId: "YOUR_ANDROID_CLIENT_ID",
+        iosClientId: "YOUR_IOS_CLIENT_ID",
+        scopes: ["profile", "email"],
       });
-  
-      if (type === 'success') {
+
+      if (type === "success") {
         // You can use the token to authenticate the user on the server
-        console.log('Google token:', accessToken);
-      } else if (type === 'cancel') {
-        console.log('Google login cancelled');
+        console.log("Google token:", accessToken);
+      } else if (type === "cancel") {
+        console.log("Google login cancelled");
       } else {
-        console.log('Google login error:', type);
+        console.log("Google login error:", type);
       }
     } catch (error) {
-      console.log('Google login error:', error.message);
+      console.log("Google login error:", error.message);
     }
   };
-  
+
   // Function to handle login with Apple
   const handleAppleLogin = async () => {
     try {
       const { identityToken, email } = await AppleAuthentication.signInAsync({
-        requestedScopes: [AppleAuthentication.AppleAuthenticationScope.FULL_NAME, AppleAuthentication.AppleAuthenticationScope.EMAIL],
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
       });
-  
+
       // You can use the identityToken and email to authenticate the user on the server
-      console.log('Apple identity token:', identityToken);
-      console.log('Apple email:', email);
+      console.log("Apple identity token:", identityToken);
+      console.log("Apple email:", email);
     } catch (error) {
-      console.log('Apple login error:', error.message);
+      console.log("Apple login error:", error.message);
     }
   };
 
@@ -83,16 +113,12 @@ const SignUpScreen = ({ navigation }) => {
     "Sedan-Regular": require("../assets/fonts/Sedan-Regular.ttf"),
   });
 
-  const handleSubmit = () => {
-    // TODO: handle form submission
-  };
-
   if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}>
       <Text style={styles.title}>NAON</Text>
       <TextInput
         style={styles.input}
@@ -175,7 +201,7 @@ const SignUpScreen = ({ navigation }) => {
           </TouchableOpacity>
         </Text>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -250,10 +276,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   bottomContainer: {
-    justifyContent: "center",
-    position: "absolute",
-    bottom: 39,
-    alignSelf: "center",
+    marginTop: 20,
+    alignItems: "center",
   },
   bottomText: {
     fontSize: 12,

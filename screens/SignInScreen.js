@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
   StyleSheet,
   TouchableOpacity,
   Text,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useFonts } from "expo-font";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome } from "@expo/vector-icons";
-import * as Facebook from 'expo-facebook';
-import * as Google from 'expo-google-app-auth';
-import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Facebook from "expo-facebook";
+import * as Google from "expo-google-app-auth";
+import * as AppleAuthentication from "expo-apple-authentication";
+import supabase from "../supabase/supabase";
+import sha256 from "crypto-js/sha256";
 
 const SignInScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -22,63 +26,112 @@ const SignInScreen = ({ navigation }) => {
     // Handle forgot password logic here
   };
 
-  
+  const handleSubmit = async () => {
+    try {
+      // Hash the password before comparing it with the hashed password in the database
+      const hashedPassword = sha256(password).toString();
+
+      // Query the Supabase "users" table to find a user with the given email or name and hashed password
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .or(`name.eq.${name},email.eq.${name}`)
+        .eq("password", hashedPassword)
+        .single();
+
+      if (error) {
+        console.log("Error signing in:", error.message);
+      } else if (!data) {
+        console.log("Invalid username or password");
+      } else {
+        // success message or redirect to next page
+        console.log("Signed in successfully");
+      }
+    } catch (error) {
+      console.log("Error signing in:", error.message);
+    }
+  };
+
+  const handleRememberMe = () => {
+    setRememberMe(!rememberMe);
+    if (!rememberMe) {
+      // Save the username in local storage
+      AsyncStorage.setItem("name", name);
+    } else {
+      // Remove the name from local storage
+      AsyncStorage.removeItem("name");
+    }
+  };
+
+  useEffect(() => {
+    // Check if the username is stored in local storage
+    AsyncStorage.getItem("name").then((value) => {
+      if (value !== null) {
+        setName(value);
+        setRememberMe(true);
+      }
+    });
+  }, []);
+
   const handleFacebookLogin = async () => {
     try {
       await Facebook.initializeAsync({
-        appId: 'YOUR_APP_ID',
+        appId: "YOUR_APP_ID",
       });
       const { type, token } = await Facebook.logInWithReadPermissionsAsync({
-        permissions: ['public_profile', 'email'],
+        permissions: ["public_profile", "email"],
       });
-  
-      if (type === 'success') {
+
+      if (type === "success") {
         // You can use the token to authenticate the user on the server
-        console.log('Facebook token:', token);
-      } else if (type === 'cancel') {
-        console.log('Facebook login cancelled');
+        console.log("Facebook token:", token);
+      } else if (type === "cancel") {
+        console.log("Facebook login cancelled");
       } else {
-        console.log('Facebook login error:', type);
+        console.log("Facebook login error:", type);
       }
     } catch (error) {
-      console.log('Facebook login error:', error.message);
+      console.log("Facebook login error:", error.message);
     }
   };
-  
+
   // Function to handle login with Google
   const handleGoogleLogin = async () => {
     try {
       const { type, accessToken, user } = await Google.logInAsync({
-        androidClientId: 'YOUR_ANDROID_CLIENT_ID',
-        iosClientId: 'YOUR_IOS_CLIENT_ID',
-        scopes: ['profile', 'email'],
+        androidClientId: "YOUR_ANDROID_CLIENT_ID",
+        iosClientId: "YOUR_IOS_CLIENT_ID",
+        scopes: ["profile", "email"],
       });
-  
-      if (type === 'success') {
+
+      if (type === "success") {
         // You can use the token to authenticate the user on the server
-        console.log('Google token:', accessToken);
-      } else if (type === 'cancel') {
-        console.log('Google login cancelled');
+        console.log("Google token:", accessToken);
+      } else if (type === "cancel") {
+        console.log("Google login cancelled");
       } else {
-        console.log('Google login error:', type);
+        console.log("Google login error:", type);
       }
     } catch (error) {
-      console.log('Google login error:', error.message);
+      console.log("Google login error:", error.message);
     }
   };
-  
+
   // Function to handle login with Apple
   const handleAppleLogin = async () => {
     try {
       const { identityToken, email } = await AppleAuthentication.signInAsync({
-        requestedScopes: [AppleAuthentication.AppleAuthenticationScope.FULL_NAME, AppleAuthentication.AppleAuthenticationScope.EMAIL],
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
       });
-  
+
       // You can use the identityToken and email to authenticate the user on the server
-      console.log('Apple identity token:', identityToken);
-      console.log('Apple email:', email);
+      console.log("Apple identity token:", identityToken);
+      console.log("Apple email:", email);
     } catch (error) {
-      console.log('Apple login error:', error.message);
+      console.log("Apple login error:", error.message);
     }
   };
 
@@ -86,25 +139,21 @@ const SignInScreen = ({ navigation }) => {
     "Sedan-Regular": require("../assets/fonts/Sedan-Regular.ttf"),
   });
 
-  const handleSubmit = () => {
-    // TODO: handle form submission
-  };
-
-  const handleRememberMe = () => {
-    setRememberMe(!rememberMe);
-  };
-
   if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior="{Platform.OS === 'ios' ? 'padding' : 'height'}"
+    >
       <Text style={styles.title}>NAON</Text>
       <TextInput
         style={styles.input}
         placeholder="username or email"
         value={name}
+        defaultValue={rememberMe ? name : ""}
         onChangeText={setName}
       />
       <View style={styles.passwordContainer}>
@@ -164,15 +213,17 @@ const SignInScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.bottomContainer}>
+      <View
+        style={styles.bottomContainer}
+      >
         <Text style={styles.bottomText}>
-        don’t have an account? 
+          don’t have an account?
           <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
             <Text style={styles.loginText}>Register</Text>
           </TouchableOpacity>
         </Text>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -239,7 +290,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 15
+    marginTop: 15,
   },
   buttonText: {
     color: "#fff",
@@ -267,10 +318,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   bottomContainer: {
-    justifyContent: "center",
-    position: "absolute",
-    bottom: 39,
-    alignSelf: "center",
+    marginTop: 20,
+    alignItems: "center",
   },
   bottomText: {
     fontSize: 12,

@@ -10,6 +10,8 @@ import SignInScreen from "./screens/SignInScreen";
 import PrivacyPolicyScreen from "./screens/PrivacyPolicyScreen";
 import TermsOfUseScreen from "./screens/TermsOfUseScreen";
 
+
+
 const Stack = createStackNavigator();
 
 export default function App() {
