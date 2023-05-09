@@ -9,7 +9,7 @@ import SignUpScreen from "./screens/SignUpScreen";
 import SignInScreen from "./screens/SignInScreen";
 import PrivacyPolicyScreen from "./screens/PrivacyPolicyScreen";
 import TermsOfUseScreen from "./screens/TermsOfUseScreen";
-
+import VerifyEmailScreen from "./screens/VerifyEmailScreen";
 
 
 const Stack = createStackNavigator();
@@ -17,7 +17,7 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Splash">
+      <Stack.Navigator initialRouteName="SplashScreen">
         <Stack.Screen
           name="Splash"
           component={CustomSplashScreen}
@@ -41,6 +41,11 @@ export default function App() {
         <Stack.Screen
           name="SignIn"
           component={SignInScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="VerifyEmailScreen"
+          component={VerifyEmailScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} 

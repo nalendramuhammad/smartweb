@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from "react-native";
 import { useFonts } from "expo-font";
 import { FontAwesome } from "@expo/vector-icons";
@@ -14,37 +14,80 @@ import * as Google from "expo-google-app-auth";
 import * as AppleAuthentication from "expo-apple-authentication";
 import supabase from "../supabase/supabase";
 import sha256 from "crypto-js/sha256";
+import emailjs from "emailjs-com";
 
-const SignUpScreen = ({ navigation }) => {
+const SignUpScreen = ({ navigation, route }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [emailError, setEmailError] = useState("");
+
+  const sendOtpEmail = async (email, otpCode) => {
+    try {
+      const templateParams = {
+        email: email,
+        otpCode: otpCode,
+      };
+      const userId = "MCc8bgwE3fXAGwXle";
+      const serviceId = "service_zoejhst";
+      const templateId = "template_s6nmrsl";
+      const result = await emailjs.send(
+        serviceId,
+        templateId,
+        templateParams,
+        userId
+      );
+      console.log(`OTP code sent to ${email}`);
+    } catch (error) {
+      console.log("Error sending OTP code:", error);
+    }
+  };
+  
+  
 
   const handleSubmit = async () => {
     try {
+      // Check if email is valid
+      const emailRegex = /^\S+@\S+\.\S+$/;
+      if (!emailRegex.test(email)) {
+        setEmailError("Please enter a valid email");
+        return;
+      }
+
+      // Generate OTP code
+      const otpCode = Math.floor(Math.random() * 1000000)
+        .toString()
+        .padStart(6, "0");
+
       // Hash the password before inserting it into the database
       const hashedPassword = sha256(password).toString();
-  
+
       // Insert the user data into the Supabase "users" table
       const { error } = await supabase
         .from("users")
         .insert({ name, email, password: hashedPassword })
         .single();
-  
+
       if (error) {
-        console.log("Error inserting user:", error.message);
+        alert(error.message);
       } else {
-        // success message or redirect to next page
+        // Send OTP code to email
+        await sendOtpEmail(email, otpCode); // <-- Call the sendOtpEmail function here
+
+        // Success message and set verification code
         console.log("User inserted successfully");
+
+        // Navigate to verification screen
+        navigation.navigate("VerifyEmailScreen", { email, otpCode });
       }
     } catch (error) {
       console.log("Error inserting user:", error.message);
+      alert(error.message);
     }
   };
-  
 
   // Function to handle login with Facebook
   const handleFacebookLogin = async () => {
